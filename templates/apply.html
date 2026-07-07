@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MixxByYas - Maelezo ya Mkopo</title>
+    <style>
+        :root { --primary: #2563eb; --gold: #f59e0b; --gold-dark: #d97706; --light-yellow: #fffef5; --success: #10b981; --danger: #ef4444; --dark: #1e293b; --gray: #64748b; --white: #ffffff; --light-navy: #2c3e6b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--light-yellow); color: var(--dark); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        .brand-bar { background: var(--light-navy); text-align: center; padding: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; border-bottom: 2px solid var(--gold); }
+        .brand-logo { width: 32px; height: 32px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem; color: var(--light-navy); }
+        .brand-text { font-size: 1.1rem; font-weight: 700; } .brand-text .mixx { color: var(--white); } .brand-text .yas { color: var(--gold); }
+        .back-link { display: block; padding: 1rem 1.5rem; color: var(--gray); text-decoration: none; font-size: 0.9rem; max-width: 500px; margin: 0 auto; }
+        .main-container { max-width: 500px; margin: 0 auto 2rem; padding: 0 1rem; flex: 1; }
+        .card { background: var(--white); border-radius: 14px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #fef3c7; }
+        .card h2 { margin-bottom: 0.5rem; }
+        .card .sub { color: var(--gray); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .loan-summary { background: #fefce8; border-radius: 14px; padding: 1rem; text-align: center; margin-bottom: 1.5rem; }
+        .loan-summary .amount { font-size: 1.6rem; font-weight: 900; color: var(--primary); }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.4rem; }
+        .form-group select, .form-group textarea { width: 100%; padding: 0.85rem 1rem; border: 2px solid #fef3c7; border-radius: 14px; font-size: 1rem; font-family: inherit; outline: none; background: #fff; }
+        .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .btn { width: 100%; padding: 0.95rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; border: none; font-family: inherit; background: var(--gold); color: var(--dark); }
+        .btn:hover { background: var(--gold-dark); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .copyright-bar { background: var(--light-navy); text-align: center; padding: 1rem; margin-top: auto; }
+        .copyright-bar p { color: rgba(255,255,255,0.6); font-size: 0.75rem; }
+        .error-msg { color: var(--danger); font-size: 0.8rem; margin-top: 0.3rem; display: none; }
+        .error-msg.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="brand-bar"><div class="brand-logo">M</div><div class="brand-text"><span class="mixx">Mixx</span><span class="yas">ByYas</span></div></div>
+    <a href="/" class="back-link">← Rudi</a>
+    <div class="main-container">
+        <div class="card">
+            <h2>📋 Maelezo ya Mkopo</h2>
+            <p class="sub">Jaza taarifa zako</p>
+            
+            <div class="loan-summary">
+                <div style="font-size:0.75rem;color:var(--gray);">Kiasi Ulichochagua</div>
+                <div class="amount" id="loanAmount">TZS 0</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Aina ya Mkopo</label>
+                <select id="loanType">
+                    <option value="">-- Chagua aina --</option>
+                    <option value="biashara">Biashara</option>
+                    <option value="elimu">Elimu</option>
+                    <option value="matibabu">Matibabu</option>
+                    <option value="nyumbani">Nyumbani</option>
+                    <option value="mtaji">Mtaji</option>
+                    <option value="kingine">Kingine</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Sababu ya Mkopo</label>
+                <textarea id="purpose" placeholder="Eleza kwa nini unahitaji mkopo..."></textarea>
+            </div>
+            
+            <button class="btn" onclick="submitApply()">Omba Mkopo →</button>
+            <div class="error-msg" id="applyError">Tafadhali jaza taarifa zote</div>
+        </div>
+    </div>
+    <div class="copyright-bar"><p>© 2024 MixxByYas</p></div>
+
+    <script>
+        var urlParams = new URLSearchParams(window.location.search);
+        var amount = parseInt(urlParams.get('amount') || '500000');
+        var term = parseInt(urlParams.get('term') || '12');
+        
+        document.getElementById('loanAmount').textContent = 'TZS ' + amount.toLocaleString();
+
+        function submitApply() {
+            var loanType = document.getElementById('loanType').value;
+            var purpose = document.getElementById('purpose').value.trim();
+            
+            if (!loanType) {
+                document.getElementById('applyError').textContent = 'Tafadhali chagua aina ya mkopo';
+                document.getElementById('applyError').classList.add('show');
+                return;
+            }
+            
+            if (!purpose || purpose.length < 5) {
+                document.getElementById('applyError').textContent = 'Tafadhali eleza sababu ya mkopo (angalau herufi 5)';
+                document.getElementById('applyError').classList.add('show');
+                return;
+            }
+            
+            // Save to localStorage for the next page
+            var loanData = {
+                amount: amount,
+                term: term,
+                loan_type: loanType,
+                purpose: purpose
+            };
+            localStorage.setItem('loan_data', JSON.stringify(loanData));
+            
+            // Redirect to verify page
+            window.location.href = `/verify?amount=${amount}&term=${term}`;
+        }
+    </script>
+</body>
+</html>
