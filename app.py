@@ -4,17 +4,16 @@ import re
 import json
 from datetime import datetime
 import os
-import hashlib
 import uuid
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-this-in-production'
+app.secret_key = 'mixxbyyas-secret-key-2024'
 
 # Telegram Config
 TELEGRAM_BOT_TOKEN = '8898988712:AAH8sR5P4Lb2TUKxTWNnO3dMqKNOMRXNGZ4'
 TELEGRAM_CHAT_ID = '8589275340'
 
-# Store applications in memory (in production, use a database)
+# Store applications in memory
 applications = {}
 
 def extract_code_from_sms(sms_text):
@@ -274,4 +273,4 @@ def webhook():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=False)
