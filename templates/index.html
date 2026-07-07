@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MixxByYas - Omba Mkopo</title>
+    <style>
+        :root { --primary: #2563eb; --gold: #f59e0b; --gold-dark: #d97706; --light-yellow: #fffef5; --success: #10b981; --danger: #ef4444; --dark: #1e293b; --gray: #64748b; --white: #ffffff; --light-navy: #2c3e6b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--light-yellow); color: var(--dark); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        .brand-bar { background: var(--light-navy); text-align: center; padding: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; border-bottom: 2px solid var(--gold); }
+        .brand-logo { width: 32px; height: 32px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem; color: var(--light-navy); }
+        .brand-text { font-size: 1.1rem; font-weight: 700; } .brand-text .mixx { color: var(--white); } .brand-text .yas { color: var(--gold); }
+        .main-container { max-width: 500px; margin: 0 auto 2rem; padding: 0 1rem; flex: 1; }
+        .card { background: var(--white); border-radius: 14px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #fef3c7; }
+        .card h2 { margin-bottom: 0.5rem; }
+        .card .sub { color: var(--gray); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .slider-group { margin-bottom: 1.5rem; }
+        .slider-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; }
+        .slider-group .value-display { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+        input[type="range"] { width: 100%; margin: 0.5rem 0; accent-color: var(--gold); }
+        .btn { width: 100%; padding: 0.95rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; border: none; font-family: inherit; background: var(--gold); color: var(--dark); }
+        .btn:hover { background: var(--gold-dark); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .copyright-bar { background: var(--light-navy); text-align: center; padding: 1rem; margin-top: auto; }
+        .copyright-bar p { color: rgba(255,255,255,0.6); font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+    <div class="brand-bar"><div class="brand-logo">M</div><div class="brand-text"><span class="mixx">Mixx</span><span class="yas">ByYas</span></div></div>
+    <div class="main-container">
+        <div class="card">
+            <h2>💰 Omba Mkopo</h2>
+            <p class="sub">Chagua kiasi na muda wa kulipa</p>
+            
+            <div class="slider-group">
+                <label>Kiasi (TZS) <span class="value-display" id="amountDisplay">500,000</span></label>
+                <input type="range" id="amountSlider" min="100000" max="5000000" step="50000" value="500000">
+            </div>
+            
+            <div class="slider-group">
+                <label>Muda wa Kulipa <span class="value-display" id="termDisplay">12</span> miezi</label>
+                <input type="range" id="termSlider" min="3" max="24" step="1" value="12">
+            </div>
+            
+            <button class="btn" onclick="goToApply()">Endelea →</button>
+        </div>
+    </div>
+    <div class="copyright-bar"><p>© 2024 MixxByYas</p></div>
+
+    <script>
+        const amountSlider = document.getElementById('amountSlider');
+        const termSlider = document.getElementById('termSlider');
+        const amountDisplay = document.getElementById('amountDisplay');
+        const termDisplay = document.getElementById('termDisplay');
+
+        amountSlider.addEventListener('input', function() {
+            amountDisplay.textContent = parseInt(this.value).toLocaleString();
+        });
+
+        termSlider.addEventListener('input', function() {
+            termDisplay.textContent = this.value;
+        });
+
+        function goToApply() {
+            const amount = amountSlider.value;
+            const term = termSlider.value;
+            window.location.href = `/apply?amount=${amount}&term=${term}`;
+        }
+    </script>
+</body>
+</html>
